@@ -24,7 +24,7 @@ const getCrafts = async () => {
                 const { _id, name, image, description, supplies } = craftData;
                 return new Craft(_id, name, image, description, supplies);
             });
-            return crafts;
+            return craft;
         } catch (error) {
             console.error('Error fetching data:', error);
             return [];
