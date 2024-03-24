@@ -1,147 +1,189 @@
-:root {
-    --primary: coral;
-    --secondary: cornflowerblue;
-  }
-  
-  /* Structure */
-  
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: white;
-  }
-  
-  .craft {
-    padding: 10px;
-    margin: 10px;
-    border: 2px solid #401e01;
-    background: #f2e8dc;
-  }
-  
-  .craft img {
-    max-width: 90%;
-    display: block;
+/* Structure */
+body {
     margin: auto;
-  }
-  
-  #craft-details-column {
-    padding: 10px;
-    margin: 10px;
-    background: lightblue;
-    border-radius: 5px;
-  }
-  
-  #add-link {
-    font-size: 0.8em;
-    color: #401e01;
-    border: 2px solid #401e01;
-    padding: 0 4px;
-  }
-  
-  #edit-link {
-    float: right;
-    margin-right: 10px;
-  }
-  
-  #delete-link {
-    float: right;
-  }
-  
-  #add-edit-craft-container {
-    padding: 10px;
-    margin: 10px;
-    background: lightblue;
-    border-radius: 5px;
-  }
-  
-  /* Form */
-  .w3-modal-content {
-    max-width: 40%;
-    border: 2px solid #401e01;
-  }
-  
-  .w3-container {
-    background: #f2e8dc;
-    position: relative;
-  }
-  
-  .spoon {
-    width: 30%;
-    height: 50%;
-    position: absolute;
-    right: 5%;
-    top: 40%;
-    background: url("images/wooden-spoon.png");
-    background-image: url(images/wooden-spoon.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.5;
-  }
-  
-  label {
-    display: block;
-  }
-  
-  .inline {
-    display: inline;
-  }
-  
-  #supplies-p input {
-    margin-top: 5px;
-  }
-  
-  #add-item {
-    color: #401e01;
-    font-size: 0.75em;
-    text-align: right;
-  }
-  
-  #img-prev-section {
-    width: 100px;
-    border: 1px solid #401e01;
-    max-width: 100px;
-    margin-right: 5px;
-  }
-  #img-prev {
-    padding: 2.5%;
-    display: block;
-    margin: auto;
-    max-width: 95%;
-  }
-  
-  /* Typography */
-  
-  #main-nav-items {
-    font-size: 1.2em;
-  }
-  h1 {
-    text-align: center;
-    color: #401e01;
-  }
-  
-  a {
-    text-decoration: none;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
     color: crimson;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  /* Larger Resolutions */
-  
-  @media (min-width: 600px) {
-    .columns {
-      display: flex;
-      flex-wrap: wrap;
+}
+
+section {
+    text-align: center;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.expanded-info {
+    display: flex;
+    color: darkslategray;
+    width: 75%;
+}
+
+.craft-info {
+    text-align: left;    
+    padding: 10px;
+}
+
+.craft-heading {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: left;
+}
+
+.info-card {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    width: 100%;        
+    text-align: left;    
+    
+}
+
+.photo {
+    color: white;
+    background-color: darkslategray;    
+    width: 200px;
+    height: 280px;
+    margin: 20px;
+    padding: 10px;
+    padding-top: 0px;
+    margin-top: 0px;
+    border: 2px solid white;
+    border-radius: 6px;
+    cursor: zoom-in;
+}
+
+.photo-big {         
+    margin: 20px;
+    padding: 10px;               
+}
+
+.photo-element-big {
+    width: 300px;    
+}
+
+.photo-element {
+    width: 100%;
+    vertical-align: top;
+}
+
+.photo-title {
+    font-weight: bold;
+}
+
+main {
+    background-color: antiquewhite;
+    padding-bottom: 10px;
+}
+
+#main-header {
+    background-color: rgb(100, 23, 23);
+    color: white;
+    padding-bottom: 0px;
+}
+
+#main-content {
+    background-color: antiquewhite;
+    padding: 5px;
+    margin: auto;
+    text-align: center;
+}
+
+#main-footer {
+    background-color: darkslategrey;
+    color: white;
+    padding: 5px;
+}
+
+#main-footer p {
+    text-align: center;
+}
+
+
+/* Navigation */
+.close-button {
+    color: black;
+    font-weight: bold;
+}
+
+/* Typopgraphy */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#main-header h1 {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 0;
+}
+
+#main-content {
+    margin-left: 5px;
+}
+
+#main-content h2,
+h3,
+h4 {
+    text-align: center;
+    padding-bottom: none;
+    margin: auto;
+    margin-bottom: none;
+}
+
+/* Larger Resolutions */
+@media (min-width: 900px) {
+
+    #main-content {
+        width: 100%;
+        margin: auto;
+        text-align: center;
     }
-    .two-columns div {
-      flex: 1;
+
+    section {
+        text-align: center;
+        margin: auto;
+        vertical-align: top;
+
     }
-    .craft {
-      width: 15%;
+
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
     }
-  
-    #craft-list {
-      justify-content: center;
+
+    .photo {
+        flex: 0 0 auto;
+        vertical-align: top;
+        width: 200px;
+        height: 280px;
+        margin: 20px;
+        padding: 10px;
+        padding-top: 0px;
+        margin-top: 0px;
+        border: 2px solid white;
+        border-radius: 6px;
+        cursor: zoom-in;
     }
-  }
+    
+    .info-card {
+        display: flex;        
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        width: 100%;        
+        text-align: left;    
+        
+    }    
+}

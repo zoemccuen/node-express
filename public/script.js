@@ -5,140 +5,151 @@ const getCrafts = async () => {
       console.log(error);
     }
   };
-  
-  const showCrafts = async () => {
-    let crafts = await getCrafts();
-    let craftsDiv = document.getElementById("craft-list");
-    craftsDiv.innerHTML = "";
-    crafts.forEach((craft) => {
-      const section = document.createElement("section");
-      section.classList.add("craft");
-      craftsDiv.append(section);
-  
-      const a = document.createElement("a");
-      a.href = "#";
-      section.append(a);
-  
-      const h3 = document.createElement("h3");
-      h3.innerHTML = craft.name;
-      a.append(h3);
-  
-      const img = document.createElement("img");
-      img.src = craft.img;
-      a.append(img);
-  
-      a.onclick = (e) => {
-        e.preventDefault();
-        displayDetails(craft);
-      };
-    });
-  };
-  
-  const displayDetails = (craft) => {
-    openDialog("craft-details");
-    const craftDetails = document.getElementById("craft-details");
-    craftDetails.innerHTML = "";
-    craftDetails.classList.remove("hidden");
-  
-    const h3 = document.createElement("h3");
-    h3.innerHTML = craft.name;
-    craftDetails.append(h3);
-  
-    const p = document.createElement("p");
-    craftDetails.append(p);
-    p.innerHTML = craft.description;
-  
-    const ul = document.createElement("ul");
-    craftDetails.append(ul);
-    console.log(craft.supplies);
-    craft.supplies.forEach((item) => {
-      const li = document.createElement("li");
-      ul.append(li);
-      li.innerHTML = item;
-    });
-  
-    const spoon = document.createElement("section");
-    spoon.classList.add("spoon");
-    craftDetails.append(spoon);
-  };
-  
-  const addCraft = async (e) => {
-    e.preventDefault();
-    const form = document.getElementById("add-craft-form");
-    const formData = new FormData(form);
-    let response;
-    formData.append("supplies", getSupplies());
-  
-    console.log(...formData);
-  
-    response = await fetch("/api/crafts", {
-      method: "POST",
-      body: formData,
-    });
-  
-    //successfully got data from server
-    if (response.status != 200) {
-      console.log("Error posting data");
+  class Craft {
+    constructor(_id, name, image, description, supplies) {
+        this._id = _id;
+        this.name = name;
+        this.image = "crafts/" + image;
+        this.supplies = supplies;
     }
-  
-    await response.json();
-    resetForm();
-    document.getElementById("dialog").style.display = "none";
-    showCrafts();
-  };
-  
-  const getSupplies = () => {
-    const inputs = document.querySelectorAll("#item-boxes input");
-    let supplies = [];
-  
-    inputs.forEach((input) => {
-      supplies.push(input.value);
-    });
-  
-    return supplies;
-  };
-  
-  const resetForm = () => {
-    const form = document.getElementById("add-craft-form");
-    form.reset();
-    document.getElementById("item-boxes").innerHTML = "";
-    document.getElementById("img-prev").src = "";
-  };
-  
-  const showCraftForm = (e) => {
-    e.preventDefault();
-    openDialog("add-craft-form");
-    resetForm();
-  };
-  
-  const addItem = (e) => {
-    e.preventDefault();
-    const section = document.getElementById("item-boxes");
-    const input = document.createElement("input");
-    input.type = "text";
-    section.append(input);
-  };
-  
-  const openDialog = (id) => {
-    document.getElementById("dialog").style.display = "block";
-    document.querySelectorAll("#dialog-details > *").forEach((item) => {
-      item.classList.add("hidden");
-    });
-    document.getElementById(id).classList.remove("hidden");
-  };
-  
-  //initial code
-  showCrafts();
-  document.getElementById("add-craft-form").onsubmit = addCraft;
-  document.getElementById("add-link").onclick = showCraftForm;
-  document.getElementById("add-item").onclick = addItem;
-  
-  document.getElementById("img").onchange = (e) => {
-    if (!e.target.files.length) {
-      document.getElementById("img-prev").src = "";
-      return;
+
+    static async fetch(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const craftsData = await response.json();
+            const craft = craftsData.map(craftsData => {
+                const { _id, name, image, description, supplies } = craftData;
+                return new Craft(_id, name, image, description, supplies);
+            });
+            return crafts;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
     }
-    document.getElementById("img-prev").src = URL.createObjectURL(
-      e.target.files.item(0)
-    );
-  };
+
+    get expandedSection() {        
+        const photoSection = document.createElement("section");
+        const target = "modal-" + this.craftID;        
+        photoSection.classList.add("w3-modal");
+        photoSection.id = target;
+
+        /* Add the main div which will contain the modal */
+        const infoDiv = document.createElement("div");
+        infoDiv.classList.add("w3-modal-content");
+        infoDiv.classList.add("expanded-info");
+
+        /* Add the next div which will contain the Content of the modal */
+        const contentDiv = document.createElement("div");
+       // contentDiv.classList.add("w3-container");
+
+        /* Add Close Button for Modal */
+        const closeButton = document.createElement("span");
+        closeButton.classList.add("w3-button");
+        closeButton.classList.add("w3-display-topright");
+        closeButton.classList.add("close-button");
+        closeButton.onclick = () => { modalClose(target); };
+        closeButton.innerHTML = "&times;";
+
+        /* Create an image element for the craft */
+        const photoImg = document.createElement("img");
+        photoImg.src = this.source;
+        photoImg.classList.add("photo-element-big");
+
+        /* Create the text div and elements */
+        const textBox = document.createElement("div");
+        textBox.classList.add("craft-info");
+        const heading = document.createElement("p");
+        heading.innerText = this.name;
+        heading.classList.add("craft-heading");
+
+        const craftFacts = document.createElement("p");
+        const craftFactText = "<p><b>Name:</b> " + this.craftName + "</p>" +
+                            "<p><b>Description:</b> " + this.description + "</p>" +
+                            "<p><b>Supplies:</b> " + this.supplies + "</p>";
+
+        craftFacts.innerHTML = craftFactText;
+        textBox.appendChild(heading); // Add Header to top of textBox
+        textBox.appendChild(craftFacts); // Add the craft Facts!
+
+        
+        /* Create the div that holds the image on the right side of the info card */
+        const imageBox = document.createElement("div");
+        imageBox.classList.add("photo-big");    
+        imageBox.appendChild(photoImg); // Add the image to the imageBox
+        
+
+        /* Put close button into the container for the expanded info card */
+        contentDiv.appendChild(closeButton);
+
+        /* Create div to contain the expanded text and image */
+        const infoCard = document.createElement("div");
+        infoCard.classList.add("info-card");
+        infoCard.appendChild(textBox);
+        infoCard.appendChild(imageBox);
+
+        /* Put InfoCard into the modal content under the close button */
+        contentDiv.appendChild(infoCard);
+
+        /* Add the inside stuff to the modal dialog */
+        infoDiv.appendChild(contentDiv);
+        photoSection.appendChild(infoDiv);
+
+        return photoSection;
+    }
+
+    get section() {
+        const photoSection = document.createElement("section");
+        photoSection.classList.add("photo");
+        const target = "modal-" + this.craftID;
+        photoSection.onclick = () => { modalOpen(target); };
+        const photoImg = document.createElement("img");
+        photoImg.src = this.source;        
+        photoImg.classList.add("photo-element");
+        const titleLine = document.createElement("p");
+        titleLine.classList.add("photo-title");
+        titleLine.innerText = this.name;
+        photoSection.appendChild(titleLine);
+        photoSection.appendChild(photoImg);
+        return photoSection;
+    }
+}
+
+const modalOpen = (theName) => {
+    document.getElementById(theName).style.display = "block";
+}
+
+const modalClose = (theName) => {
+    document.getElementById(theName).style.display = "none";
+}
+
+const loadCrafts = async () => {
+    const url = "https://portiaportia.github.io/json/crafts.json?" + new Date().getTime(); // Trick to get it to not cache the file
+    try {
+        const crafts = await Craft.fetch(url);
+        return await crafts;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const initGallery = async () => {
+    let craftArray = await loadCrafts();
+    let photoGallery = document.getElementById("image-gallery");
+
+    if (craftArray !== undefined && craftArray.length > 0) {
+        craftArray.forEach((aCraft) => {
+            photoGallery.append(aCraft.section);
+            photoGallery.append(aCraft.expandedSection);
+        })
+    }
+}
+
+
+/* Put everything that will talk to elements on the page AFTER the load is complete */
+window.onload = () => {
+    initGallery();
+};
