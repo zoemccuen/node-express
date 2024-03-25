@@ -1,15 +1,9 @@
-const getCrafts = async () => {
-    try {
-      return (await fetch("api/crafts/")).json();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  class Craft {
-    constructor(_id, name, image, description, supplies) {
-        this._id = _id;
+class Craft {
+    constructor(id, name, image, description, supplies) {
+        this.id = id;
         this.name = name;
-        this.image = "crafts/" + image;
+        this.image = "images/" + image;
+        this.description = description;
         this.supplies = supplies;
     }
 
@@ -19,10 +13,10 @@ const getCrafts = async () => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const craftsData = await response.json();
-            const craft = craftsData.map(craftsData => {
-                const { _id, name, image, description, supplies } = craftData;
-                return new Craft(_id, name, image, description, supplies);
+            const craftData = await response.json();
+            const craft = craftData.map(craftData => {
+                const { id, name, image, description, supplies } = craftData;
+                return new Craft(id, name, image, description, supplies);
             });
             return craft;
         } catch (error) {
@@ -31,11 +25,30 @@ const getCrafts = async () => {
         }
     }
 
-    get expandedSection() {        
-        const photoSection = document.createElement("section");
-        const target = "modal-" + this.craftID;        
-        photoSection.classList.add("w3-modal");
-        photoSection.id = target;
+    get renderCraft() {
+        /* Make the main section to hold all the craft info      
+           The craft cards are just the image for the craft project, but when clicked on
+           they will open a modal lightbox with details about the craft project.
+        */
+        const craftProject = document.createElement("section");
+        craftProject.classList.add("craft-card"); // Flex container for top portion
+        const target = "modal-" + this.id;
+
+        // Make the photo of the craft - to the right and is 300px
+        const craftPhoto = document.createElement("img");
+        craftPhoto.src = this.image;
+        craftPhoto.classList.add("photo-craft");
+        craftProject.onclick = () => { modalOpen(target); };
+        craftProject.appendChild(craftPhoto);
+
+        return craftProject;
+    }
+
+    get expandedSection() {
+        const craftDetailCard = document.createElement("section");
+        const target = "modal-" + this.id
+        craftDetailCard.classList.add("w3-modal");
+        craftDetailCard.id = target;
 
         /* Add the main div which will contain the modal */
         const infoDiv = document.createElement("div");
@@ -44,7 +57,7 @@ const getCrafts = async () => {
 
         /* Add the next div which will contain the Content of the modal */
         const contentDiv = document.createElement("div");
-       // contentDiv.classList.add("w3-container");
+        // contentDiv.classList.add("w3-container");
 
         /* Add Close Button for Modal */
         const closeButton = document.createElement("span");
@@ -54,67 +67,47 @@ const getCrafts = async () => {
         closeButton.onclick = () => { modalClose(target); };
         closeButton.innerHTML = "&times;";
 
-        /* Create an image element for the craft */
-        const photoImg = document.createElement("img");
-        photoImg.src = this.source;
-        photoImg.classList.add("photo-element-big");
-
-        /* Create the text div and elements */
-        const textBox = document.createElement("div");
-        textBox.classList.add("craft-info");
-        const heading = document.createElement("p");
-        heading.innerText = this.name;
-        heading.classList.add("craft-heading");
-
-        const craftFacts = document.createElement("p");
-        const craftFactText = "<p><b>Name:</b> " + this.craftName + "</p>" +
-                            "<p><b>Description:</b> " + this.description + "</p>" +
-                            "<p><b>Supplies:</b> " + this.supplies + "</p>";
-
-        craftFacts.innerHTML = craftFactText;
-        textBox.appendChild(heading); // Add Header to top of textBox
-        textBox.appendChild(craftFacts); // Add the craft Facts!
-
-        
-        /* Create the div that holds the image on the right side of the info card */
-        const imageBox = document.createElement("div");
-        imageBox.classList.add("photo-big");    
-        imageBox.appendChild(photoImg); // Add the image to the imageBox
-        
-
         /* Put close button into the container for the expanded info card */
         contentDiv.appendChild(closeButton);
 
+        /* Create an image element for the craft project */
+        const craftPhoto = document.createElement("img");
+        craftPhoto.src = this.image;
+        craftPhoto.classList.add("craft-photo-small");
+
+        /* Create header for the title */
+        const heading = document.createElement("h2");
+        heading.classList.add("craft-details-header");
+        heading.innerText = this.name;
+
+        /* Create the text div and elements */
+        const craftDetails = document.createElement("p");
+        let craftText = "";
+        craftText += "<p>" + this.description + "</p>";
+        craftText += "<p><h3>Supplies Needed</h3></p>";
+        craftText += "<ul>";
+        this.supplies.forEach((craftSupply) => {
+            craftText += "<li>" + toTitleCase(craftSupply) + "</li>";
+        });
+        craftText += "</li>";
+        
+        craftDetails.innerHTML = craftText;        
+
         /* Create div to contain the expanded text and image */
         const infoCard = document.createElement("div");
-        infoCard.classList.add("info-card");
-        infoCard.appendChild(textBox);
-        infoCard.appendChild(imageBox);
+        infoCard.classList.add("craft-details");        
+        infoCard.appendChild(heading);
+        infoCard.appendChild(craftDetails);
 
-        /* Put InfoCard into the modal content under the close button */
+        /* Put InfoCard into the modal content under the close button */        
         contentDiv.appendChild(infoCard);
 
         /* Add the inside stuff to the modal dialog */
+        infoDiv.appendChild(craftPhoto);
         infoDiv.appendChild(contentDiv);
-        photoSection.appendChild(infoDiv);
+        craftDetailCard.appendChild(infoDiv);
 
-        return photoSection;
-    }
-
-    get section() {
-        const photoSection = document.createElement("section");
-        photoSection.classList.add("photo");
-        const target = "modal-" + this.craftID;
-        photoSection.onclick = () => { modalOpen(target); };
-        const photoImg = document.createElement("img");
-        photoImg.src = this.source;        
-        photoImg.classList.add("photo-element");
-        const titleLine = document.createElement("p");
-        titleLine.classList.add("photo-title");
-        titleLine.innerText = this.name;
-        photoSection.appendChild(titleLine);
-        photoSection.appendChild(photoImg);
-        return photoSection;
+        return craftDetailCard;
     }
 }
 
@@ -126,30 +119,36 @@ const modalClose = (theName) => {
     document.getElementById(theName).style.display = "none";
 }
 
-const loadCrafts = async () => {
-    const url = "https://portiaportia.github.io/json/crafts.json?" + new Date().getTime(); // Trick to get it to not cache the file
+const loadCraft = async () => {
+    const url = "http://localhost:3000/api/crafts";
     try {
-        const crafts = await Craft.fetch(url);
-        return await crafts;
+        const craft = await Craft.fetch(url);
+        return await craft;
     } catch (error) {
         console.log(error);
     }
 }
 
+// It bugs me when the JSON has lowercase to start the supply names, so this fixes it
+const toTitleCase = str => {
+    return str.replace(/\w\S*/g, txt => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 const initGallery = async () => {
-    let craftArray = await loadCrafts();
-    let photoGallery = document.getElementById("image-gallery");
+    let craftArray = await loadCraft();
+    let photoGallery = document.getElementById("craft-section");
 
     if (craftArray !== undefined && craftArray.length > 0) {
         craftArray.forEach((aCraft) => {
-            photoGallery.append(aCraft.section);
+            photoGallery.append(aCraft.renderCraft);
             photoGallery.append(aCraft.expandedSection);
+
         })
     }
 }
 
-
-/* Put everything that will talk to elements on the page AFTER the load is complete */
 window.onload = () => {
     initGallery();
 };
