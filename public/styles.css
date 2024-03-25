@@ -57,6 +57,7 @@ section {
 .craft-details {    
     display: block;
     text-align: left;
+    margin-left: 10px;
 }
 
 .craft-details-header {    
